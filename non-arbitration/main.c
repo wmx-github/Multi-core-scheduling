@@ -32,7 +32,7 @@ long long gettime()
 
 void print_result()
 {
-    printf("%d\n", curr);
+    printf("定时器超时 curr = %d\n", curr);
     exit(0);
 }
 
@@ -49,24 +49,41 @@ void do_task()
     struct node *tsk = (struct node*) malloc(sizeof(struct node));
 
     pthread_spin_lock(&spin); // 锁定整个访问计算区间
+
     if (timer && timer_start == 0) {
         struct itimerval tick = {0};
         timer_start = 1;
+
+        //--定时器超时触发,终止程序
         signal(SIGALRM, print_result);
+
+        //--10秒后启动定时器
         tick.it_value.tv_sec = 10;
         tick.it_value.tv_usec = 0;
         setitimer(ITIMER_REAL, &tick, NULL);
     }
     if (!timer && curr == count) {
         end = gettime();
-        printf("%lld\n", end - start);
+        printf("耗时（毫秒）: end - start = %lld \n", end - start);
         exit(0);
     }
     curr ++;
-    for (i = 0; i < 0xff; i++) { // 做一些稍微耗时的计算，模拟类似socket操作。强度可以调整，比如0xff->0xffff，CPU比较猛比较多的机器上做测试，将其调强些，否则队列开销会淹没模拟任务的开销。
+
+    //--锁内,模拟耗时任务
+    for (i = 0; i < 0xff; i++) {
         k += i/j;
     }
+
     pthread_spin_unlock(&spin);
+
+
+
+    //--锁外,模拟耗时任务
+//    for (i = 0; i < 0xff; i++) {
+//        k += i/j;
+//    }
+
+
     free(tsk);
 }
 
@@ -77,22 +94,39 @@ void* func(void *arg)
     }
 }
 
+
+/*!
+ * \brief main
+ * \param argc
+ * \param argv
+ * \return
+ */
 int main(int argc, char **argv)
 {
+    printf("模拟宏内核 访问共享资源时的自旋锁并发争抢模式\n");
+
     int err, i;
-    int tcnt;
+    int threadCounts;
     pthread_t tid;
 
+    //--参数１　链表node数量
     count = atoi(argv[1]);
-    tcnt = atoi(argv[2]);
+    //--参数２  线程数量
+    threadCounts = atoi(argv[2]);
+
+    printf("链表node数量 count = %d   线程数量 threadCounts = %d\n", count, threadCounts);
+
     if (argc == 4) {
         timer = 1;
     }
 
     pthread_spin_init(&spin, PTHREAD_PROCESS_PRIVATE);
+
+    //--开始时间戳
     start = gettime();
+
     // 创建工作线程
-    for (i = 0; i < tcnt; i++) {
+    for (i = 0; i < threadCounts; i++) {
         err = pthread_create(&tid, NULL, func, NULL);
         if (err != 0) {
             exit(1);
