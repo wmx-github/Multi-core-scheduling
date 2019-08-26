@@ -1,3 +1,7 @@
+
+//-- 多核多线程自旋锁spinlock 与互斥量mutex性能分析
+//-- https://blog.csdn.net/WMX843230304WMX/article/details/100052812
+
 //Name: svm2.c
 //Source: http://www.solarisinternals.com/wiki/index.php/DTrace_Topics_Locks
 //Compile(spin lock version): gcc -o spin -DUSE_SPINLOCK svm2.c -lpthread

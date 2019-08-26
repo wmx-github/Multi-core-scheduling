@@ -1,7 +1,12 @@
+
+//-- 多核多线程自旋锁spinlock 与互斥量mutex性能分析
+//-- https://blog.csdn.net/WMX843230304WMX/article/details/100052812
+
 // Name: spinlockvsmutex1.cc
 // Source: http://www.alexonlinux.com/pthread-mutex-vs-pthread-spinlock
 // Compiler(spin lock version): g++ -o spin_version -DUSE_SPINLOCK spinlockvsmutex1.cc -lpthread
 // Compiler(mutex version): g++ -o mutex_version spinlockvsmutex1.cc -lpthread
+
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/syscall.h>
