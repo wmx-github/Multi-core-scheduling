@@ -23,6 +23,10 @@ Multi-core scheduling
 ## 6 spinlockvsmutex2
 
 	* 1 适用 mutex ，临界区很大
+## 7 mandelbrot
+	* mandelbrot 集　
+	并行计算，多线程渲染ＧＵＩ
+	工作线程执行繁重的计算而不会阻塞主线程的事件循环
 
 
 
